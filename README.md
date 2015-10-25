@@ -2,4 +2,4 @@
 
 Components related the Muecas robotic head
 
-![alt text](https://github.com/robocomp/muecas/edit/master/muecas.jpg "Muecas the Robot")
+![alt text](https://github.com/robocomp/muecas/blob/master/muecas.jpg "Muecas the Robot")
