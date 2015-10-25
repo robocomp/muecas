@@ -1,0 +1,10 @@
+import "/robocomp/Interfaces/IDSLs/JointMotor.idsl";
+
+Component muecasservos
+{
+	Communications
+	{
+		implements JointMotor;
+	};
+	language Cpp;
+};

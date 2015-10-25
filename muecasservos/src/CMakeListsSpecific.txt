@@ -1,0 +1,19 @@
+
+# Sources set
+SET ( SOURCES
+  specificworker.cpp
+  specificmonitor.cpp
+  servo.cpp
+  $ENV{ROBOCOMP}/classes/q4serialport/q4serialport.cpp
+
+)
+
+# Headers set
+SET ( HEADERS
+  specificworker.h
+  specificmonitor.h
+  $ENV{ROBOCOMP}/classes/q4serialport/q4serialport.h
+
+)
+
+ADD_DEFINITIONS( -std=c++11 )
