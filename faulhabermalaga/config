@@ -1,0 +1,52 @@
+######
+# This property is used to configure the endpoints of the subscriber adapter.
+######
+
+JointMotor.Endpoints=tcp -p 10189
+CommonBehavior.Endpoints=tcp -p 11068
+
+#CommonBehavior.Endpoints=tcp -p 11187
+# Remote servers proxies example
+#RemoteProxy = remote:tcp -h remotehost -p 10001
+
+#############################
+### Local parameters       ##
+#############################
+
+Faulhaber.NumMotors = 7
+Faulhaber.Device = /dev/ttyUSB0
+Faulhaber.BaudRate = 1000000
+Faulhaber.BasicPeriod = 100
+
+
+#name, busId, inverted, minPos, maxPos, zeroPos, maxVelocity, steps_range, max_degrees
+Faulhaber.Params_0 = neck,1,false,-1.40,1.40,-5000		,1,17960,360 #cuello giro 
+Faulhaber.Params_1 = neckFront,2,false,-3.14,3.14,5000		,1,17960,360 #cuello delante => z
+Faulhaber.Params_2 = neckLeft,3,false,-3.14,3.14,5000		,1,17960,360 #cuello delante => y
+Faulhaber.Params_3 = neckRight,4,false,-3.14,3.14,5000		,1,17960,360 #cuello atras => x
+Faulhaber.Params_4 = rightPan,5,false,-0.3,0.3,-2000		,1,3000,360	#ojo derecho
+Faulhaber.Params_5 = leftPan,6,false,-0.3,0.3,2000		,1,3000,360  #ojo izquierdo
+Faulhaber.Params_6 = tilt,7,false,-0.25,0.25,800		,1,3000,360  #tilt
+
+
+#Faulhaber.Params_1 = faul1,B,true,-1.7,1.7,0,0.9,0,0
+#Faulhaber.Params_2 = faul2,C,true,-3.14,3.14,0,0.9,0,0
+
+#incluir motor ranges como parámetros:  //steps_range , max_degrees, steps_speed_range, max_speed_rads 
+	
+# User config parameters
+# Example = value
+
+#############################
+### Ice-related properties ##
+#############################
+# Warn about connection exceptions
+Ice.Warn.Connections=0
+# Network Tracing: (0: no network tracing; 1: trace connection establishment and closure; 2: like 1, but more detailed; 3: like 2, but also trace data transfer).
+Ice.Trace.Network=0
+# Protocol Tracing: (0: no protocol tracing; 1: trace protocol messages)
+Ice.Trace.Protocol=0
+
+# Faster ACM
+Ice.ACM.Client=10
+Ice.ACM.Server=10

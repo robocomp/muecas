@@ -1,0 +1,11 @@
+import "/robocomp/interfaces/IDSLs/JointMotor.idsl";
+
+Component FaulhaberMalaga
+{
+	Communications
+	{
+		implements JointMotor;
+	};
+
+	language Cpp;
+};
