@@ -1,0 +1,23 @@
+# Debug config file
+
+#
+# This property is used to configure the endpoints of the subscriber adapter.
+#
+MuecasImitationComp.Endpoints=tcp -p 12238
+CommonBehavior.Endpoints=tcp -p 12240
+MSKFaceEventTopic.Endpoints=tcp -p 12241
+MSKBodyEventTopic.Endpoints=tcp -p 12242
+
+# Remote servers proxies example
+#RemoteProxy = remote:tcp -h remotehost -p 10001
+
+CameraProxy = camera:tcp -h localhost -p 10001
+JointMotor0Proxy = jointmotor:tcp -h localhost -p 10067
+JointMotor1Proxy = jointmotor:tcp -h localhost -p 10067
+MSKRGBDProxy = mskrgbd:tcp -h localhost -p 12239
+SpeechProxy = speech:tcp -h localhost -p 10021
+
+#
+# This property is used by the clients to connect to IceStorm.
+#
+TopicManager.Proxy=DemoIceStorm/TopicManager:default -p 10000

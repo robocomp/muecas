@@ -1,0 +1,17 @@
+#
+# This property is used to configure the endpoints of the subscriber adapter.
+#
+CommonBehavior.Endpoints=tcp -p 12240
+
+
+CameraProxy = camera:tcp -h localhost -p 10001
+JointMotor1Proxy = jointmotor:tcp -h localhost -p 10067
+JointMotor2Proxy = jointmotor:tcp -h localhost -p 10189
+SpeechProxy = speech:tcp -h localhost -p 10021
+IMUProxy = imu:tcp -h localhost -p 10066
+
+
+#
+# This property is used by the clients to connect to IceStorm.
+#
+TopicManager.Proxy=IceStorm/TopicManager:default -p 9999

@@ -1,0 +1,19 @@
+CommonBehavior.Endpoints=tcp -p 1
+
+
+# Proxies for required interfaces
+CameraProxy = camera:tcp -h localhost -p 0
+IMUProxy = imu:tcp -h localhost -p 0
+JointMotor1Proxy = jointmotor:tcp -h localhost -p 0
+JointMotor2Proxy = jointmotor:tcp -h localhost -p 0
+SpeechProxy = speech:tcp -h localhost -p 0
+
+
+
+Ice.Warn.Connections=0
+Ice.Trace.Network=0
+Ice.Trace.Protocol=0
+Ice.ACM.Client=10
+Ice.ACM.Server=10
+
+
