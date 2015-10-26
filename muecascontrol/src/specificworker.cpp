@@ -146,6 +146,95 @@ SpecificWorker::~SpecificWorker()
 {
 }
 
+bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
+{
+
+	FlyCapture2::Error error;
+	FlyCapture2::CameraInfo camInfo;
+
+	// Connect the camera
+	FlyCapture2::BusManager bus;
+	uint nCams;
+	bus.GetNumOfCameras(&nCams);
+	FlyCapture2::PGRGuid pGuid;
+	error = bus.GetCameraFromIndex(0,&pGuid);
+	if ( error != FlyCapture2::PGRERROR_OK )
+  {
+      error.PrintErrorTrace();
+			return false;
+  }
+  cout << "Number of cameras detected: " << nCams << endl; 
+  if ( nCams < 1 )
+    {
+        cout << "Insufficient number of cameras... press Enter to exit." << endl; ;
+        cin.ignore();
+        return false;
+    }
+  ppCameras = new FlyCapture2::Camera*[nCams];
+	// Connect to all detected cameras and attempt to set them to a common video mode and frame rate
+  for ( unsigned int i = 0; i < nCams; i++)
+  {
+		ppCameras[i] = new FlyCapture2::Camera();
+
+    FlyCapture2::PGRGuid guid;
+    error = bus.GetCameraFromIndex( i, &guid );
+    if (error != FlyCapture2::PGRERROR_OK)
+    {
+            error.PrintErrorTrace();
+            return false;
+    }
+
+		// Connect to a camera
+		error = ppCameras[i]->Connect( &guid );
+		if (error != FlyCapture2::PGRERROR_OK)
+		{
+			error.PrintErrorTrace();
+			return false;
+		}
+		// Set all cameras to a specific mode and frame rate so they
+    // can be synchronized
+    error = ppCameras[i]->SetVideoModeAndFrameRate( FlyCapture2::VIDEOMODE_640x480Y8, FlyCapture2::FRAMERATE_30 );
+    if (error != FlyCapture2::PGRERROR_OK)
+		{
+        error.PrintErrorTrace();
+        cout << "Error starting cameras. " << endl;
+        cout << "This example requires cameras to be able to set to 640x480 Y8 at 30fps. " << endl;
+        cout << "If your camera does not support this mode, please edit the source code and recompile the application. " << endl;
+        cout << "Press Enter to exit. " << endl;
+        cin.ignore();
+        return false;
+    }
+  }
+ 	qDebug() << "start cap";
+  //error = FlyCapture2::Camera::StartSyncCapture( nCams, (const FlyCapture2::Camera**)ppCameras );
+		qDebug() << "start cap";
+	error = ppCameras[0]->StartCapture();
+	if (error != FlyCapture2::PGRERROR_OK)
+  {
+     error.PrintErrorTrace();
+     cout << "Error starting cameras. " << endl;
+     cout << "This example requires cameras to be able to set to 640x480 Y8 at 30fps. " << endl;
+     cout << "If your camera does not support this mode, please edit the source code and recompile the application. " << endl;
+     cout << "Press Enter to exit. " << endl;
+     cin.ignore();
+     return false;
+  }
+	error = ppCameras[1]->StartCapture();
+	if (error != FlyCapture2::PGRERROR_OK)
+  {
+     error.PrintErrorTrace();
+     cout << "Error starting cameras. " << endl;
+     cout << "This example requires cameras to be able to set to 640x480 Y8 at 30fps. " << endl;
+     cout << "If your camera does not support this mode, please edit the source code and recompile the application. " << endl;
+     cout << "Press Enter to exit. " << endl;
+     cin.ignore();
+     return false;
+  }
+	timer.start(Period);
+
+	return true;
+};
+
 void SpecificWorker::compute( )
 {
 ////////////////motores///////////////////////////////////////
@@ -202,58 +291,59 @@ void SpecificWorker::compute( )
 // 	memcpy (  qImageRGB2->bits(), cvImage2->imageData, paramsCamera.width*paramsCamera.height );
 
 	 //IMAGE
-	
-		FlyCapture2::Image rawImage;
-		FlyCapture2::Error error = camera.RetrieveBuffer( &rawImage );
+		FlyCapture2::Error error;
+		FlyCapture2::Image rawImageL, rawImageR;	
+		 
+		error = ppCameras[0]->RetrieveBuffer( &rawImageL );
+		 qDebug() << "start cap";
 		if ( error != FlyCapture2::PGRERROR_OK )
 		{
 			std::cout << "capture error" << std::endl;
 		}
+ 		error = ppCameras[1]->RetrieveBuffer( &rawImageR );
+ 		if ( error != FlyCapture2::PGRERROR_OK )
+ 		{
+ 			std::cout << "capture error" << std::endl;
+ 		}
 		
 		// convert to rgb
-	  FlyCapture2::Image rgbImage;
-    rawImage.Convert( FlyCapture2::PIXEL_FORMAT_BGR, &rgbImage );
+	  //FlyCapture2::Image rgbImage;
+    //rawImageL.Convert( FlyCapture2::PIXEL_FORMAT_BGR, &rgbImage );
 		// convert to OpenCV Mat
-		unsigned int rowBytes = (double)rgbImage.GetReceivedDataSize()/(double)rgbImage.GetRows();       
-		cv::Mat image = cv::Mat(rgbImage.GetRows(), rgbImage.GetCols(), CV_8UC3, rgbImage.GetData(),rowBytes);
-		cv::flip(image, image, 0);
-		const QImage qimage(image.data, image.cols, image.rows, image.step, QImage::Format_RGB888);
-		labelLeft->setPixmap(QPixmap::fromImage(qimage));
+		unsigned int rowBytes = (double)rawImageL.GetReceivedDataSize()/(double)rawImageL.GetRows();       
+		cv::Mat imageL = cv::Mat(rawImageL.GetRows(), rawImageL.GetCols(), CV_8UC1, rawImageL.GetData(),rowBytes);
+		cv::flip(imageL, imageL, 0);
+		const QImage qimageL(imageL.data, imageL.cols, imageL.rows, imageL.step, QImage::Format_Indexed8);
+		labelLeft->setPixmap(QPixmap::fromImage(qimageL));
+		cv::Mat imageR = cv::Mat(rawImageR.GetRows(), rawImageR.GetCols(), CV_8UC1, rawImageR.GetData(),rowBytes);
+		cv::flip(imageR, imageR, 0);
+		const QImage qimageR(imageR.data, imageR.cols, imageR.rows, imageR.step, QImage::Format_Indexed8);
+		labelRight->setPixmap(QPixmap::fromImage(qimageR));
+		
+		cv::StereoBM sbm;
+// 		sbm.state->SADWindowSize = 9;
+// 		sbm.state->numberOfDisparities = 112;
+// 		sbm.state->preFilterSize = 5;
+// 		sbm.state->preFilterCap = 61;
+// 		sbm.state->minDisparity = -39;
+// 		sbm.state->textureThreshold = 507;
+// 		sbm.state->uniquenessRatio = 0;
+// 		sbm.state->speckleWindowSize = 0;
+// 		sbm.state->speckleRange = 8;
+// 		sbm.state->disp12MaxDiff = 1;
+		Mat disp, disp_norm, disp_norm_scaled;
+		sbm(imageR, imageL, disp);
+		cv::normalize( disp, disp_norm, 0, 255, NORM_MINMAX, CV_8U, Mat() );
+		//cv::convertScaleAbs( disp_norm, disp_norm_scaled );
+		cv::imshow("disp",disp_norm);
+		cv::waitKey(10);
     // resize the label to fit the image
     //labelRight->resize(label->pixmap()->size());
 		// 		cv::imshow("image", image);
 		// 		cv::waitKey(10); 
 }
 
-bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
-{
 
-	FlyCapture2::Error error;
-	FlyCapture2::CameraInfo camInfo;
-
-	// Connect the camera
-	error = camera.Connect( 0 );
-	if ( error != FlyCapture2::PGRERROR_OK )
-  {
-      std::cout << "Failed to connect to camera" << std::endl;     
-      return false;
-  }
-    
-	error = camera.StartCapture();
-	if ( error == FlyCapture2::PGRERROR_ISOCH_BANDWIDTH_EXCEEDED )
-  {
-    std::cout << "Bandwidth exceeded" << std::endl;     
-    return false;
-	}
-	else if ( error != FlyCapture2::PGRERROR_OK )
-  {
-     std::cout << "Failed to start image capture" << std::endl;     
-     return false;
-  } 
-	
-	timer.start(Period);
-	return true;
-};
 
 void SpecificWorker::habla()
 {

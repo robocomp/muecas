@@ -5,6 +5,7 @@
 ```
 Intro to component here
 
+This component requires, momentarily,  the FlyCapture SDK from Point Grey
 
 ## Configuration parameters
 As any other component,

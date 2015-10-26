@@ -102,7 +102,7 @@ Q_OBJECT
 		RoboCompCommonHead::THeadState hState;
 	*/		
 	QImage *qImageRGB;
-	FlyCapture2::Camera camera;
+	FlyCapture2::Camera **ppCameras;
 	
 };
 
