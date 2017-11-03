@@ -32,6 +32,7 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	
 	////READ FROM CONFIG!!!
 	neckMotorName ="neck";
+	
 	tiltMotorName ="tilt";
 	leftPanMotorName = "leftPan";
 	rightPanMotorName = "rightPan";
@@ -64,11 +65,15 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	
 	////////////////////faulhaber y motor///////////////////////////////
 	
-		//read params from faulhaber and muecasJoint
+	qDebug() << __FUNCTION__ << "Read params from faulhaber and muecasJoint";
 	try
 	{
 		mplFaulhaber = jointmotor2_proxy->getAllMotorParams();
 		mplAll = mplFaulhaber;
+		foreach( RoboCompJointMotor::MotorParams param, mplFaulhaber)
+		{
+			qDebug() << QString::fromStdString(param.name);
+		}
 		qDebug() << __FUNCTION__ << "Connection to Faulhaber OK";
 	}
 	catch(Ice::Exception &e)
@@ -83,27 +88,27 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	}
 	catch(Ice::Exception &e)
 	{	std::cout << e<<std::endl; }
+
+// 	//Now checking for motors in JointMotor that match localParams
+// 	int cont=0;
+// 	QVector<RoboCompJointMotor::MotorParams> qmp = QVector<RoboCompJointMotor::MotorParams>::fromStdVector( mplFaulhaber );
+// 	foreach( RoboCompJointMotor::MotorParams qmp, mplFaulhaber)
+// 	{
+// 		if (qmp.name == neckMotorName  or  qmp.name == tiltMotorName  or qmp.name == leftPanMotorName or  qmp.name == rightPanMotorName )
+// 		{
+// 			headParams.motorsParams[qmp.name] = qmp;
+// 			cont++;
+// 		}
+// 		else
+// 			qDebug() << "muecasHead::Monitor::Initialize() - No required motor found in running JointMotor: "<<qmp.name.c_str();
+// 	}
 	
-	//Now checking for motors in JointMotor that match localParams
-	int cont=0;
-	QVector<RoboCompJointMotor::MotorParams> qmp = QVector<RoboCompJointMotor::MotorParams>::fromStdVector( mplFaulhaber );
-	foreach( RoboCompJointMotor::MotorParams qmp, mplFaulhaber)
-	{
-		if (qmp.name == neckMotorName  or  qmp.name == tiltMotorName  or qmp.name == leftPanMotorName or  qmp.name == rightPanMotorName )
-		{
-			headParams.motorsParams[qmp.name] = qmp;
-			cont++;
-		}
-		else
-			qDebug() << "muecasHead::Monitor::Initialize() - No required motor found in running JointMotor: "<<qmp.name.c_str();
-	}
-	
-	if(cont != 4)
-	{
-		qDebug() << "muecasHead::Monitor::Initialize() - Required motors not found in running JointMotor";
-		qFatal("error initializing head motors");
-	}
-	headParams.model = "NT2P";
+// 	if(cont != 4)
+// 	{
+// 		qDebug() << "muecasHead::Monitor::Initialize() - Required motors not found in running JointMotor";
+// 		qFatal("error initializing head motors");
+// 	}
+// 	headParams.model = "NT2P";
 
 	qDebug() << "muecasHead() - constructor Ok";
 	
@@ -134,7 +139,7 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	connect(righteyebrowroll, SIGNAL(valueChanged(double)),this, SLOT(moveFaceElems(double)));
 	
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));	
-  connect(ButtonSpeech, SIGNAL(clicked()),this, SLOT(habla()));
+	connect(ButtonSpeech, SIGNAL(clicked()),this, SLOT(habla()));
 	
 	timer.start(100); //is in ms
 }
@@ -149,87 +154,6 @@ SpecificWorker::~SpecificWorker()
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 {
 
-	FlyCapture2::Error error;
-	FlyCapture2::CameraInfo camInfo;
-
-	// Connect the camera
-	FlyCapture2::BusManager bus;
-	uint nCams;
-	bus.GetNumOfCameras(&nCams);
-	FlyCapture2::PGRGuid pGuid;
-	error = bus.GetCameraFromIndex(0,&pGuid);
-	if ( error != FlyCapture2::PGRERROR_OK )
-  {
-      error.PrintErrorTrace();
-			return false;
-  }
-  cout << "Number of cameras detected: " << nCams << endl; 
-  if ( nCams < 1 )
-    {
-        cout << "Insufficient number of cameras... press Enter to exit." << endl; ;
-        cin.ignore();
-        return false;
-    }
-  ppCameras = new FlyCapture2::Camera*[nCams];
-	// Connect to all detected cameras and attempt to set them to a common video mode and frame rate
-  for ( unsigned int i = 0; i < nCams; i++)
-  {
-		ppCameras[i] = new FlyCapture2::Camera();
-
-    FlyCapture2::PGRGuid guid;
-    error = bus.GetCameraFromIndex( i, &guid );
-    if (error != FlyCapture2::PGRERROR_OK)
-    {
-            error.PrintErrorTrace();
-            return false;
-    }
-
-		// Connect to a camera
-		error = ppCameras[i]->Connect( &guid );
-		if (error != FlyCapture2::PGRERROR_OK)
-		{
-			error.PrintErrorTrace();
-			return false;
-		}
-		// Set all cameras to a specific mode and frame rate so they
-    // can be synchronized
-    error = ppCameras[i]->SetVideoModeAndFrameRate( FlyCapture2::VIDEOMODE_640x480Y8, FlyCapture2::FRAMERATE_30 );
-    if (error != FlyCapture2::PGRERROR_OK)
-		{
-        error.PrintErrorTrace();
-        cout << "Error starting cameras. " << endl;
-        cout << "This example requires cameras to be able to set to 640x480 Y8 at 30fps. " << endl;
-        cout << "If your camera does not support this mode, please edit the source code and recompile the application. " << endl;
-        cout << "Press Enter to exit. " << endl;
-        cin.ignore();
-        return false;
-    }
-  }
- 	qDebug() << "start cap";
-  //error = FlyCapture2::Camera::StartSyncCapture( nCams, (const FlyCapture2::Camera**)ppCameras );
-		qDebug() << "start cap";
-	error = ppCameras[0]->StartCapture();
-	if (error != FlyCapture2::PGRERROR_OK)
-  {
-     error.PrintErrorTrace();
-     cout << "Error starting cameras. " << endl;
-     cout << "This example requires cameras to be able to set to 640x480 Y8 at 30fps. " << endl;
-     cout << "If your camera does not support this mode, please edit the source code and recompile the application. " << endl;
-     cout << "Press Enter to exit. " << endl;
-     cin.ignore();
-     return false;
-  }
-	error = ppCameras[1]->StartCapture();
-	if (error != FlyCapture2::PGRERROR_OK)
-  {
-     error.PrintErrorTrace();
-     cout << "Error starting cameras. " << endl;
-     cout << "This example requires cameras to be able to set to 640x480 Y8 at 30fps. " << endl;
-     cout << "If your camera does not support this mode, please edit the source code and recompile the application. " << endl;
-     cout << "Press Enter to exit. " << endl;
-     cin.ignore();
-     return false;
-  }
 	timer.start(Period);
 
 	return true;
@@ -240,16 +164,20 @@ void SpecificWorker::compute( )
 ////////////////motores///////////////////////////////////////
 	try
 	{
+		//qDebug() << "Talking to head";
 		jointmotor2_proxy->getAllMotorState(stateFaulhaber);
 	}
 	catch(Ice::Exception &ex)
 	{	std::cout << ex<<std::endl; }
+
 	try
 	{
 		jointmotor1_proxy->getAllMotorState(stateMuecas);
 	}
 	catch(Ice::Exception &ex)
 	{ std::cout << ex<<std::endl;	}
+	
+	
 	try
 	{
 		dataImu = imu_proxy->getDataImu();
@@ -291,56 +219,56 @@ void SpecificWorker::compute( )
 // 	memcpy (  qImageRGB2->bits(), cvImage2->imageData, paramsCamera.width*paramsCamera.height );
 
 	 //IMAGE
-		FlyCapture2::Error error;
-		FlyCapture2::Image rawImageL, rawImageR;	
-		 
-		error = ppCameras[0]->RetrieveBuffer( &rawImageL );
-		 qDebug() << "start cap";
-		if ( error != FlyCapture2::PGRERROR_OK )
-		{
-			std::cout << "capture error" << std::endl;
-		}
- 		error = ppCameras[1]->RetrieveBuffer( &rawImageR );
- 		if ( error != FlyCapture2::PGRERROR_OK )
- 		{
- 			std::cout << "capture error" << std::endl;
- 		}
-		
-		// convert to rgb
-	  //FlyCapture2::Image rgbImage;
-    //rawImageL.Convert( FlyCapture2::PIXEL_FORMAT_BGR, &rgbImage );
-		// convert to OpenCV Mat
-		unsigned int rowBytes = (double)rawImageL.GetReceivedDataSize()/(double)rawImageL.GetRows();       
-		cv::Mat imageL = cv::Mat(rawImageL.GetRows(), rawImageL.GetCols(), CV_8UC1, rawImageL.GetData(),rowBytes);
-		cv::flip(imageL, imageL, 0);
-		const QImage qimageL(imageL.data, imageL.cols, imageL.rows, imageL.step, QImage::Format_Indexed8);
-		labelLeft->setPixmap(QPixmap::fromImage(qimageL));
-		cv::Mat imageR = cv::Mat(rawImageR.GetRows(), rawImageR.GetCols(), CV_8UC1, rawImageR.GetData(),rowBytes);
-		cv::flip(imageR, imageR, 0);
-		const QImage qimageR(imageR.data, imageR.cols, imageR.rows, imageR.step, QImage::Format_Indexed8);
-		labelRight->setPixmap(QPixmap::fromImage(qimageR));
-		
-		cv::StereoBM sbm;
-// 		sbm.state->SADWindowSize = 9;
-// 		sbm.state->numberOfDisparities = 112;
-// 		sbm.state->preFilterSize = 5;
-// 		sbm.state->preFilterCap = 61;
-// 		sbm.state->minDisparity = -39;
-// 		sbm.state->textureThreshold = 507;
-// 		sbm.state->uniquenessRatio = 0;
-// 		sbm.state->speckleWindowSize = 0;
-// 		sbm.state->speckleRange = 8;
-// 		sbm.state->disp12MaxDiff = 1;
-		Mat disp, disp_norm, disp_norm_scaled;
-		sbm(imageR, imageL, disp);
-		cv::normalize( disp, disp_norm, 0, 255, NORM_MINMAX, CV_8U, Mat() );
-		//cv::convertScaleAbs( disp_norm, disp_norm_scaled );
-		cv::imshow("disp",disp_norm);
-		cv::waitKey(10);
-    // resize the label to fit the image
-    //labelRight->resize(label->pixmap()->size());
-		// 		cv::imshow("image", image);
-		// 		cv::waitKey(10); 
+// 		FlyCapture2::Error error;
+// 		FlyCapture2::Image rawImageL, rawImageR;	
+// 		 
+// 		error = ppCameras[0]->RetrieveBuffer( &rawImageL );
+// 		 qDebug() << "start cap";
+// 		if ( error != FlyCapture2::PGRERROR_OK )
+// 		{
+// 			std::cout << "capture error" << std::endl;
+// 		}
+//  		error = ppCameras[1]->RetrieveBuffer( &rawImageR );
+//  		if ( error != FlyCapture2::PGRERROR_OK )
+//  		{
+//  			std::cout << "capture error" << std::endl;
+//  		}
+// 		
+// 		// convert to rgb
+// 	  //FlyCapture2::Image rgbImage;
+//     //rawImageL.Convert( FlyCapture2::PIXEL_FORMAT_BGR, &rgbImage );
+// 		// convert to OpenCV Mat
+// 		unsigned int rowBytes = (double)rawImageL.GetReceivedDataSize()/(double)rawImageL.GetRows();       
+// 		cv::Mat imageL = cv::Mat(rawImageL.GetRows(), rawImageL.GetCols(), CV_8UC1, rawImageL.GetData(),rowBytes);
+// 		cv::flip(imageL, imageL, 0);
+// 		const QImage qimageL(imageL.data, imageL.cols, imageL.rows, imageL.step, QImage::Format_Indexed8);
+// 		labelLeft->setPixmap(QPixmap::fromImage(qimageL));
+// 		cv::Mat imageR = cv::Mat(rawImageR.GetRows(), rawImageR.GetCols(), CV_8UC1, rawImageR.GetData(),rowBytes);
+// 		cv::flip(imageR, imageR, 0);
+// 		const QImage qimageR(imageR.data, imageR.cols, imageR.rows, imageR.step, QImage::Format_Indexed8);
+// 		labelRight->setPixmap(QPixmap::fromImage(qimageR));
+// 		
+// 		cv::StereoBM sbm;
+// // 		sbm.state->SADWindowSize = 9;
+// // 		sbm.state->numberOfDisparities = 112;
+// // 		sbm.state->preFilterSize = 5;
+// // 		sbm.state->preFilterCap = 61;
+// // 		sbm.state->minDisparity = -39;
+// // 		sbm.state->textureThreshold = 507;
+// // 		sbm.state->uniquenessRatio = 0;
+// // 		sbm.state->speckleWindowSize = 0;
+// // 		sbm.state->speckleRange = 8;
+// // 		sbm.state->disp12MaxDiff = 1;
+// 		Mat disp, disp_norm, disp_norm_scaled;
+// 		sbm(imageR, imageL, disp);
+// 		cv::normalize( disp, disp_norm, 0, 255, NORM_MINMAX, CV_8U, Mat() );
+// 		//cv::convertScaleAbs( disp_norm, disp_norm_scaled );
+// 		cv::imshow("disp",disp_norm);
+// 		cv::waitKey(10);
+//     // resize the label to fit the image
+//     //labelRight->resize(label->pixmap()->size());
+// 		// 		cv::imshow("image", image);
+// 		// 		cv::waitKey(10); 
 }
 
 
@@ -386,8 +314,9 @@ void SpecificWorker::move(float pos,  const string& Name )
  	g.name = Name;
  	g.maxSpeed = 0;
  	g.position = pos;
- 		QMutexLocker lock(mutex);
- 	try{
+	QMutexLocker lock(mutex);
+ 	try
+ 	{
  		jointmotor1_proxy->setPosition( g );
  	}
  	catch( RoboCompJointMotor::OutOfRangeException &ex )
@@ -497,7 +426,7 @@ void SpecificWorker::moveNeck(double l)
 			// limites de los recorridos de los motores
 			if ( pasos_xx > MIN_X && pasos_xx < MAX_X && pasos_yy > MIN_Y && pasos_yy < MAX_Y && pasos_zz > MIN_Z && pasos_zz < MAX_Z && pasos_rotate > MIN_TILT &&  pasos_rotate < MAX_TILT)
 			{
-				qDebug()<<"stting positios"<<"front"<<POS_Zz<<"right"<<POS_Xx<<"left"<<POS_Yy;
+				qDebug()<< __FUNCTION__ << "Setting position" << "front" << POS_Zz << "right" << POS_Xx << "left" << POS_Yy;
 				RoboCompJointMotor::MotorGoalPosition p_goal;
 				RoboCompJointMotor::MotorGoalPositionList list;
 				
@@ -513,38 +442,33 @@ void SpecificWorker::moveNeck(double l)
 				p_goal.position = POS_Zz;
 				list.push_back(p_goal);
 
-				
 				p_goal.name = "neck";
 				p_goal.position = ROTATE;
 				list.push_back(p_goal);
-				
-				
+								
 				p_goal.name = "rightPan";
 				p_goal.position = rotations_eyeA;
 				list.push_back(p_goal);
 				
-							
 				p_goal.name = "leftPan";
 				p_goal.position = rotations_eyeB;
 				list.push_back(p_goal);
-				
 				
 				p_goal.name = "tilt";
 				p_goal.position = eyestilt;
 				list.push_back(p_goal);
 			
 				mutex->lock();
-				try
-				{
-					jointmotor2_proxy->setSyncPosition( list );
-				}
-				catch( Ice::Exception & ex)
-				{
-					std::cout<< ex.what()<< std::endl;
-				}
+					try
+					{
+						jointmotor2_proxy->setSyncPosition( list );
+					}
+					catch( Ice::Exception & ex)
+					{
+						std::cout<< ex.what()<< std::endl;
+					}
 				mutex->unlock();
 			}
-		
 }
 
 void SpecificWorker::moveFaceElems(double l)
@@ -575,3 +499,86 @@ float SpecificWorker::euclideanDistance3D(Vector3DF p1, Vector3DF p2)
  // return Tomilimeter(sqrt(pow(p1.X - p2.X,2)*1000 + pow(p1.Y - p2.Y,2)*1000 + pow(p1.Z - p2.Z,2)*1000)); 
   return Tomilimeter(sqrt(pow(p1.X - p2.X,2) + pow(p1.Y - p2.Y,2) + pow(p1.Z - p2.Z,2)));
 }*/
+
+/*
+	FlyCapture2::Error error;
+	FlyCapture2::CameraInfo camInfo;
+
+	// Connect the camera
+	FlyCapture2::BusManager bus;
+	uint nCams;
+	bus.GetNumOfCameras(&nCams);
+	FlyCapture2::PGRGuid pGuid;
+	error = bus.GetCameraFromIndex(0,&pGuid);
+	if ( error != FlyCapture2::PGRERROR_OK )
+  {
+      error.PrintErrorTrace();
+			return false;
+  }
+  cout << "Number of cameras detected: " << nCams << endl; 
+  if ( nCams < 1 )
+    {
+        cout << "Insufficient number of cameras... press Enter to exit." << endl; ;
+        cin.ignore();
+        return false;
+    }
+  ppCameras = new FlyCapture2::Camera*[nCams];
+	// Connect to all detected cameras and attempt to set them to a common video mode and frame rate
+  for ( unsigned int i = 0; i < nCams; i++)
+  {
+		ppCameras[i] = new FlyCapture2::Camera();
+
+    FlyCapture2::PGRGuid guid;
+    error = bus.GetCameraFromIndex( i, &guid );
+    if (error != FlyCapture2::PGRERROR_OK)
+    {
+            error.PrintErrorTrace();
+            return false;
+    }
+
+		// Connect to a camera
+		error = ppCameras[i]->Connect( &guid );
+		if (error != FlyCapture2::PGRERROR_OK)
+		{
+			error.PrintErrorTrace();
+			return false;
+		}
+		// Set all cameras to a specific mode and frame rate so they
+    // can be synchronized
+    error = ppCameras[i]->SetVideoModeAndFrameRate( FlyCapture2::VIDEOMODE_640x480Y8, FlyCapture2::FRAMERATE_30 );
+    if (error != FlyCapture2::PGRERROR_OK)
+		{
+        error.PrintErrorTrace();
+        cout << "Error starting cameras. " << endl;
+        cout << "This example requires cameras to be able to set to 640x480 Y8 at 30fps. " << endl;
+        cout << "If your camera does not support this mode, please edit the source code and recompile the application. " << endl;
+        cout << "Press Enter to exit. " << endl;
+        cin.ignore();
+        return false;
+    }
+  }
+ 	qDebug() << "start cap";
+  //error = FlyCapture2::Camera::StartSyncCapture( nCams, (const FlyCapture2::Camera**)ppCameras );
+		qDebug() << "start cap";
+	error = ppCameras[0]->StartCapture();
+	if (error != FlyCapture2::PGRERROR_OK)
+  {
+     error.PrintErrorTrace();
+     cout << "Error starting cameras. " << endl;
+     cout << "This example requires cameras to be able to set to 640x480 Y8 at 30fps. " << endl;
+     cout << "If your camera does not support this mode, please edit the source code and recompile the application. " << endl;
+     cout << "Press Enter to exit. " << endl;
+     cin.ignore();
+     return false;
+  }
+	error = ppCameras[1]->StartCapture();
+	if (error != FlyCapture2::PGRERROR_OK)
+  {
+     error.PrintErrorTrace();
+     cout << "Error starting cameras. " << endl;
+     cout << "This example requires cameras to be able to set to 640x480 Y8 at 30fps. " << endl;
+     cout << "If your camera does not support this mode, please edit the source code and recompile the application. " << endl;
+     cout << "Press Enter to exit. " << endl;
+     cin.ignore();
+     return false;
+  }*/

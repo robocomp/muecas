@@ -20,7 +20,7 @@
 #define SPECIFICWORKER_H
 
 #include <genericworker.h>
-#include "canbus/faulhaberApi.h"
+#include <canbus/faulhaberApi.h>
 #include "servo.h"
 /**
        \brief

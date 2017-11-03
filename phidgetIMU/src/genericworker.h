@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2015 by YOUR NAME HERE
+ *    Copyright (C)2017 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -24,46 +24,56 @@
 #include <stdint.h>
 #include <qlog/qlog.h>
 
+
 #include <CommonBehavior.h>
+
 #include <IMU.h>
+
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
 typedef map <string,::IceProxy::Ice::Object*> MapPrx;
 
 using namespace std;
+
 using namespace RoboCompIMU;
 
 
-class GenericWorker : 
+
+
+class GenericWorker :
 public QObject
 {
-	Q_OBJECT
-	public:
-		GenericWorker(MapPrx& mprx);
-		virtual ~GenericWorker();
-		virtual void killYourSelf();
-		virtual void setPeriod(int p);
-		
-		virtual bool setParams(RoboCompCommonBehavior::ParameterList params) = 0;
-		QMutex *mutex;
-		
-		virtual void resetImu() = 0;
-		virtual Orientation getOrientation() = 0;
-		virtual DataImu getDataImu() = 0;
-		virtual Gyroscope getAngularVel() = 0;
-		virtual Magnetic getMagneticFields() = 0;
-		virtual Acceleration getAcceleration() = 0;
+Q_OBJECT
+public:
+	GenericWorker(MapPrx& mprx);
+	virtual ~GenericWorker();
+	virtual void killYourSelf();
+	virtual void setPeriod(int p);
 
-	protected:
-		QTimer timer;
-		int Period;
+	virtual bool setParams(RoboCompCommonBehavior::ParameterList params) = 0;
+	QMutex *mutex;
 
-	public slots:
-		virtual void compute() = 0;
-		
-	signals:
-		void kill();
+
+
+	virtual void resetImu() = 0;
+	virtual Gyroscope getAngularVel() = 0;
+	virtual Orientation getOrientation() = 0;
+	virtual DataImu getDataImu() = 0;
+	virtual Magnetic getMagneticFields() = 0;
+	virtual Acceleration getAcceleration() = 0;
+
+protected:
+	QTimer timer;
+	int Period;
+
+private:
+
+
+public slots:
+	virtual void compute() = 0;
+signals:
+	void kill();
 };
 
 #endif

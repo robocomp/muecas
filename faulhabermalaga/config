@@ -14,7 +14,7 @@ CommonBehavior.Endpoints=tcp -p 11068
 #############################
 
 Faulhaber.NumMotors = 7
-Faulhaber.Device = /dev/ttyUSB1
+Faulhaber.Device = /dev/ttyUSB0
 Faulhaber.BaudRate = 1000000
 Faulhaber.BasicPeriod = 100
 

@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2015 by YOUR NAME HERE
+ *    Copyright (C)2017 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -27,14 +27,10 @@
 #include <ui_mainUI.h>
 
 #include <CommonBehavior.h>
-#include <DifferentialRobot.h>
-#include <CommonHead.h>
-#include <Camera.h>
-#include <IMU.h>
+
 #include <JointMotor.h>
 #include <Speech.h>
-
-
+#include <IMU.h>
 
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
@@ -43,17 +39,14 @@ typedef map <string,::IceProxy::Ice::Object*> MapPrx;
 
 using namespace std;
 
-using namespace RoboCompDifferentialRobot;
-using namespace RoboCompCommonHead;
-using namespace RoboCompCamera;
 using namespace RoboCompIMU;
-using namespace RoboCompJointMotor;
 using namespace RoboCompSpeech;
+using namespace RoboCompJointMotor;
 
 
 
 
-class GenericWorker : 
+class GenericWorker :
 #ifdef USE_QTGUI
 public QWidget, public Ui_guiDlg
 #else
@@ -66,22 +59,23 @@ public:
 	virtual ~GenericWorker();
 	virtual void killYourSelf();
 	virtual void setPeriod(int p);
-	
+
 	virtual bool setParams(RoboCompCommonBehavior::ParameterList params) = 0;
 	QMutex *mutex;
-	
 
-	CameraPrx camera_proxy;
+
 	IMUPrx imu_proxy;
+	SpeechPrx speech_proxy;
 	JointMotorPrx jointmotor1_proxy;
 	JointMotorPrx jointmotor2_proxy;
-	SpeechPrx speech_proxy;
-
 
 
 protected:
 	QTimer timer;
 	int Period;
+
+private:
+
 
 public slots:
 	virtual void compute() = 0;

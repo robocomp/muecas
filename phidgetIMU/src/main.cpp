@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2015 by YOUR NAME HERE
+ *    Copyright (C) 2017 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -59,6 +59,8 @@
  * ...
  *
  */
+#include <signal.h>
+
 // QT includes
 #include <QtCore>
 #include <QtGui>
@@ -69,6 +71,7 @@
 #include <Ice/Application.h>
 
 #include <rapplication/rapplication.h>
+#include <sigwatch/sigwatch.h>
 #include <qlog/qlog.h>
 
 #include "config.h"
@@ -82,15 +85,12 @@
 
 #include <IMU.h>
 
+
 // User includes here
 
 // Namespaces
 using namespace std;
 using namespace RoboCompCommonBehavior;
-
-using namespace RoboCompIMU;
-
-
 
 class phidgetIMU : public RoboComp::Application
 {
@@ -115,6 +115,20 @@ void ::phidgetIMU::initialize()
 int ::phidgetIMU::run(int argc, char* argv[])
 {
 	QCoreApplication a(argc, argv);  // NON-GUI application
+
+
+	sigset_t sigs;
+	sigemptyset(&sigs);
+	sigaddset(&sigs, SIGHUP);
+	sigaddset(&sigs, SIGINT);
+	sigaddset(&sigs, SIGTERM);
+	sigprocmask(SIG_UNBLOCK, &sigs, 0);
+
+	UnixSignalWatcher sigwatch;
+	sigwatch.watchForSignal(SIGINT);
+	sigwatch.watchForSignal(SIGTERM);
+	QObject::connect(&sigwatch, SIGNAL(unixSignal(int)), &a, SLOT(quit()));
+
 	int status=EXIT_SUCCESS;
 
 
@@ -132,12 +146,12 @@ int ::phidgetIMU::run(int argc, char* argv[])
 
 	if ( !monitor->isRunning() )
 		return status;
-	
+
 	while (!monitor->ready)
 	{
 		usleep(10000);
 	}
-	
+
 	try
 	{
 		// Server adapter creation and publication
@@ -162,6 +176,11 @@ int ::phidgetIMU::run(int argc, char* argv[])
 		IMUI *imu = new IMUI(worker);
 		adapterIMU->add(imu, communicator()->stringToIdentity("imu"));
 		adapterIMU->activate();
+		cout << "[" << PROGRAM_NAME << "]: IMU adapter created in port " << tmp << endl;
+
+
+
+
 
 		// Server adapter creation and publication
 		cout << SERVER_FULL_NAME " started" << endl;
@@ -174,6 +193,8 @@ int ::phidgetIMU::run(int argc, char* argv[])
 #endif
 		// Run QT Application Event Loop
 		a.exec();
+
+
 		status = EXIT_SUCCESS;
 	}
 	catch(const Ice::Exception& ex)
@@ -230,4 +251,3 @@ int main(int argc, char* argv[])
 
 	return app.main(argc, argv, configFile.c_str());
 }
-

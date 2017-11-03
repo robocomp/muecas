@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2015 by YOUR NAME HERE
+ *    Copyright (C) 2017 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -18,10 +18,9 @@
  */
 #include "jointmotorI.h"
 
-JointMotorI::JointMotorI(GenericWorker *_worker, QObject *parent) : QObject(parent)
+JointMotorI::JointMotorI(GenericWorker *_worker)
 {
 	worker = _worker;
-	mutex = worker->mutex;       // Shared worker mutex
 }
 
 
@@ -88,9 +87,4 @@ void JointMotorI::setVelocity(const MotorGoalVelocity  &goal, const Ice::Current
 {
 	worker->setVelocity(goal);
 }
-
-
-
-
-
 

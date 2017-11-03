@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2015 by YOUR NAME HERE
+ *    Copyright (C)2017 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -28,12 +28,10 @@ QObject()
 #endif
 
 {
-	camera_proxy = (*(CameraPrx*)mprx["CameraProxy"]);
 	imu_proxy = (*(IMUPrx*)mprx["IMUProxy"]);
 	jointmotor1_proxy = (*(JointMotorPrx*)mprx["JointMotorProxy1"]);
-	jointmotor2_proxy = (*(JointMotorPrx*)mprx["JointMotorProxy2"]);
 	speech_proxy = (*(SpeechPrx*)mprx["SpeechProxy"]);
-
+	jointmotor2_proxy = (*(JointMotorPrx*)mprx["JointMotorProxy2"]);
 
 	mutex = new QMutex(QMutex::Recursive);
 

@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2015 by YOUR NAME HERE
+ *    Copyright (C)2017 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -19,9 +19,6 @@
 #ifndef JOINTMOTOR_H
 #define JOINTMOTOR_H
 
-// QT includes
-#include <QtCore/QObject>
-
 // Ice includes
 #include <Ice/Ice.h>
 #include <JointMotor.h>
@@ -31,13 +28,12 @@
 
 using namespace RoboCompJointMotor;
 
-class JointMotorI : public QObject , public virtual RoboCompJointMotor::JointMotor
+class JointMotorI : public virtual RoboCompJointMotor::JointMotor
 {
-Q_OBJECT
 public:
-	JointMotorI( GenericWorker *_worker, QObject *parent = 0 );
+JointMotorI(GenericWorker *_worker);
 	~JointMotorI();
-	
+
 	MotorParamsList getAllMotorParams(const Ice::Current&);
 	void getAllMotorState( MotorStateMap  &mstateMap, const Ice::Current&);
 	MotorParams getMotorParams(const string  &motor, const Ice::Current&);
@@ -51,12 +47,9 @@ public:
 	void setPosition(const MotorGoalPosition  &goal, const Ice::Current&);
 	void setVelocity(const MotorGoalVelocity  &goal, const Ice::Current&);
 
-	QMutex *mutex;
 private:
 
 	GenericWorker *worker;
-public slots:
-
 
 };
 

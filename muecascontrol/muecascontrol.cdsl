@@ -1,12 +1,11 @@
-import "/robocomp/interfaces/IDSLs/JointMotor.idsl";
-import "/robocomp/interfaces/IDSLs/Camera.idsl";
-import "/robocomp/interfaces/IDSLs/Speech.idsl";
-import "/robocomp/interfaces/IDSLs/IMU.idsl";
+import "JointMotor.idsl";
+import "Speech.idsl";
+import "IMU.idsl";
 
 Component MuecasControlComp{
 	Communications{
-		requires JointMotor, JointMotor, Camera, Speech, IMU;
+		requires JointMotor, JointMotor, Speech, IMU;
 	};
-	gui Qt(QWidget);
 	language Cpp;
+	gui Qt(QWidget);
 };

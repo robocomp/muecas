@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2015 by YOUR NAME HERE
+ *    Copyright (C) 2017 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -18,11 +18,11 @@
  */
 #include "imuI.h"
 
-IMUI::IMUI(GenericWorker *_worker, QObject *parent) : QObject(parent)
+IMUI::IMUI(GenericWorker *_worker)
 {
 	worker = _worker;
-	mutex = worker->mutex;       // Shared worker mutex
 }
+
 
 IMUI::~IMUI()
 {
@@ -31,6 +31,11 @@ IMUI::~IMUI()
 void IMUI::resetImu(const Ice::Current&)
 {
 	worker->resetImu();
+}
+
+Gyroscope IMUI::getAngularVel(const Ice::Current&)
+{
+	return worker->getAngularVel();
 }
 
 Orientation IMUI::getOrientation(const Ice::Current&)
@@ -43,11 +48,6 @@ DataImu IMUI::getDataImu(const Ice::Current&)
 	return worker->getDataImu();
 }
 
-Gyroscope IMUI::getAngularVel(const Ice::Current&)
-{
-	return worker->getAngularVel();
-}
-
 Magnetic IMUI::getMagneticFields(const Ice::Current&)
 {
 	return worker->getMagneticFields();
@@ -57,9 +57,4 @@ Acceleration IMUI::getAcceleration(const Ice::Current&)
 {
 	return worker->getAcceleration();
 }
-
-
-
-
-
 

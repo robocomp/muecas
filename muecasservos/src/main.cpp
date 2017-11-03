@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2015 by YOUR NAME HERE
+ *    Copyright (C) 2017 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -59,6 +59,8 @@
  * ...
  *
  */
+#include <signal.h>
+
 // QT includes
 #include <QtCore>
 #include <QtGui>
@@ -69,6 +71,7 @@
 #include <Ice/Application.h>
 
 #include <rapplication/rapplication.h>
+#include <sigwatch/sigwatch.h>
 #include <qlog/qlog.h>
 
 #include "config.h"
@@ -88,10 +91,6 @@
 // Namespaces
 using namespace std;
 using namespace RoboCompCommonBehavior;
-
-using namespace RoboCompJointMotor;
-
-
 
 class muecasservos : public RoboComp::Application
 {
@@ -116,6 +115,20 @@ void ::muecasservos::initialize()
 int ::muecasservos::run(int argc, char* argv[])
 {
 	QCoreApplication a(argc, argv);  // NON-GUI application
+
+
+	sigset_t sigs;
+	sigemptyset(&sigs);
+	sigaddset(&sigs, SIGHUP);
+	sigaddset(&sigs, SIGINT);
+	sigaddset(&sigs, SIGTERM);
+	sigprocmask(SIG_UNBLOCK, &sigs, 0);
+
+	UnixSignalWatcher sigwatch;
+	sigwatch.watchForSignal(SIGINT);
+	sigwatch.watchForSignal(SIGTERM);
+	QObject::connect(&sigwatch, SIGNAL(unixSignal(int)), &a, SLOT(quit()));
+
 	int status=EXIT_SUCCESS;
 
 
@@ -133,12 +146,12 @@ int ::muecasservos::run(int argc, char* argv[])
 
 	if ( !monitor->isRunning() )
 		return status;
-	
+
 	while (!monitor->ready)
 	{
 		usleep(10000);
 	}
-	
+
 	try
 	{
 		// Server adapter creation and publication
@@ -163,6 +176,8 @@ int ::muecasservos::run(int argc, char* argv[])
 		JointMotorI *jointmotor = new JointMotorI(worker);
 		adapterJointMotor->add(jointmotor, communicator()->stringToIdentity("jointmotor"));
 		adapterJointMotor->activate();
+		cout << "[" << PROGRAM_NAME << "]: JointMotor adapter created in port " << tmp << endl;
+
 
 
 
@@ -178,6 +193,8 @@ int ::muecasservos::run(int argc, char* argv[])
 #endif
 		// Run QT Application Event Loop
 		a.exec();
+
+
 		status = EXIT_SUCCESS;
 	}
 	catch(const Ice::Exception& ex)
@@ -234,4 +251,3 @@ int main(int argc, char* argv[])
 
 	return app.main(argc, argv, configFile.c_str());
 }
-

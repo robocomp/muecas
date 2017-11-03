@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2015 by YOUR NAME HERE
+ *    Copyright (C)2017 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -19,9 +19,6 @@
 #ifndef IMU_H
 #define IMU_H
 
-// QT includes
-#include <QtCore/QObject>
-
 // Ice includes
 #include <Ice/Ice.h>
 #include <IMU.h>
@@ -31,26 +28,22 @@
 
 using namespace RoboCompIMU;
 
-class IMUI : public QObject , public virtual RoboCompIMU::IMU
+class IMUI : public virtual RoboCompIMU::IMU
 {
-Q_OBJECT
 public:
-	IMUI( GenericWorker *_worker, QObject *parent = 0 );
+IMUI(GenericWorker *_worker);
 	~IMUI();
-	
+
 	void resetImu(const Ice::Current&);
+	Gyroscope getAngularVel(const Ice::Current&);
 	Orientation getOrientation(const Ice::Current&);
 	DataImu getDataImu(const Ice::Current&);
-	Gyroscope getAngularVel(const Ice::Current&);
 	Magnetic getMagneticFields(const Ice::Current&);
 	Acceleration getAcceleration(const Ice::Current&);
 
-	QMutex *mutex;
 private:
 
 	GenericWorker *worker;
-public slots:
-
 
 };
 

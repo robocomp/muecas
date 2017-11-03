@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2015 by YOUR NAME HERE
+ *    Copyright (C)2017 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -26,9 +26,8 @@
 
 
 #include <CommonBehavior.h>
+
 #include <JointMotor.h>
-
-
 
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
@@ -42,7 +41,7 @@ using namespace RoboCompJointMotor;
 
 
 
-class GenericWorker : 
+class GenericWorker :
 public QObject
 {
 Q_OBJECT
@@ -51,10 +50,10 @@ public:
 	virtual ~GenericWorker();
 	virtual void killYourSelf();
 	virtual void setPeriod(int p);
-	
+
 	virtual bool setParams(RoboCompCommonBehavior::ParameterList params) = 0;
 	QMutex *mutex;
-	
+
 
 
 	virtual MotorParamsList getAllMotorParams() = 0;
@@ -70,10 +69,12 @@ public:
 	virtual void setPosition(const MotorGoalPosition &goal) = 0;
 	virtual void setVelocity(const MotorGoalVelocity &goal) = 0;
 
-
 protected:
 	QTimer timer;
 	int Period;
+
+private:
+
 
 public slots:
 	virtual void compute() = 0;

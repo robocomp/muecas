@@ -13,4 +13,4 @@ SET ( HEADERS
 ADD_DEFINITIONS( -std=c++11 )
 INCLUDE( $ENV{ROBOCOMP}/cmake/modules/opencv2.cmake )
 
-set (SPECIFIC_LIBS -lflycapture) 
+#set (SPECIFIC_LIBS -lflycapture) 

@@ -32,7 +32,6 @@
 #define MAX_TILT 1200
 #define MIN_TILT -1400
 
-#include <rcdraw/rcdraw.h>
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include "opencv2/highgui/highgui.hpp"
@@ -40,7 +39,6 @@
 #include <stdlib.h>
 
 #include <genericworker.h>
-#include <flycapture/FlyCapture2.h>
 
 /**
        \brief
@@ -48,6 +46,7 @@
 */
 using namespace std;
 using namespace cv;
+
 class SpecificWorker : public GenericWorker
 {
 Q_OBJECT
@@ -77,7 +76,6 @@ Q_OBJECT
 		
 		QMutex *mutex_memory;
 		bool headmoving;
-		RoboCompCommonHead::THeadParams headParams;
 		RoboCompJointMotor::MotorParamsList mplFaulhaber,mplMuecas, mplAll;
 		RoboCompJointMotor::MotorList mlFaulhaber,mlMuecas,mlAll;
 		RoboCompJointMotor::MotorStateMap stateFaulhaber,stateMuecas,stateAll;
@@ -96,13 +94,7 @@ Q_OBJECT
 		float joy_y_antiguo;
 		float joy_z_antiguo;
 						
-	/*	RoboCompCamera::TCamParams paramsCamera;
-		RoboCompCamera::imgType imgCam;  
-		RoboCompDifferentialRobot::TBaseState bState;
-		RoboCompCommonHead::THeadState hState;
-	*/		
-	QImage *qImageRGB;
-	FlyCapture2::Camera **ppCameras;
+		QImage *qImageRGB;
 	
 };
 

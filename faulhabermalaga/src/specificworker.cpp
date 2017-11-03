@@ -183,9 +183,9 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 	}
 	
 	
-	
 	//Creacion de faulhaberApi
 	faulhaber = new FaulHaberApi(QString::fromStdString(busParams.device),busParams.baudRate);
+
 	initialiazeMotors();
 
 	timer.start(Period);

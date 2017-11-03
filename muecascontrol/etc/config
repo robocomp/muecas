@@ -4,7 +4,7 @@
 CommonBehavior.Endpoints=tcp -p 12240
 
 
-CameraProxy = camera:tcp -h localhost -p 10001
+#CameraProxy = camera:tcp -h localhost -p 10001
 JointMotor1Proxy = jointmotor:tcp -h localhost -p 10067
 JointMotor2Proxy = jointmotor:tcp -h localhost -p 10189
 SpeechProxy = speech:tcp -h localhost -p 10021

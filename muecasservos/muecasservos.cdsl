@@ -1,4 +1,4 @@
-import "/robocomp/Interfaces/IDSLs/JointMotor.idsl";
+import "JointMotor.idsl";
 
 Component muecasservos
 {
