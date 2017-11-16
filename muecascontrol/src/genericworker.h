@@ -29,8 +29,9 @@
 #include <CommonBehavior.h>
 
 #include <JointMotor.h>
-#include <Speech.h>
-#include <IMU.h>
+#include <RGBD.h>
+#include <JointMotor.h>
+#include <GenericBase.h>
 
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
@@ -39,9 +40,9 @@ typedef map <string,::IceProxy::Ice::Object*> MapPrx;
 
 using namespace std;
 
-using namespace RoboCompIMU;
-using namespace RoboCompSpeech;
+using namespace RoboCompRGBD;
 using namespace RoboCompJointMotor;
+using namespace RoboCompGenericBase;
 
 
 
@@ -64,10 +65,8 @@ public:
 	QMutex *mutex;
 
 
-	IMUPrx imu_proxy;
-	SpeechPrx speech_proxy;
-	JointMotorPrx jointmotor1_proxy;
-	JointMotorPrx jointmotor2_proxy;
+	RGBDPrx rgbd_proxy;
+	JointMotorPrx jointmotor_proxy;
 
 
 protected:

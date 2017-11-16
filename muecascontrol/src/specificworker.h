@@ -94,8 +94,7 @@ Q_OBJECT
 		float joy_y_antiguo;
 		float joy_z_antiguo;
 						
-		QImage *qImageRGB;
-	
+		InnerModel *innermodel;
 };
 
 #endif

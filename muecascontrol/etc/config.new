@@ -2,10 +2,8 @@ CommonBehavior.Endpoints=tcp -p 1
 
 
 # Proxies for required interfaces
-SpeechProxy = speech:tcp -h localhost -p 0
-IMUProxy = imu:tcp -h localhost -p 0
-JointMotor1Proxy = jointmotor:tcp -h localhost -p 0
-JointMotor2Proxy = jointmotor:tcp -h localhost -p 0
+JointMotorProxy = jointmotor:tcp -h localhost -p 0
+RGBDProxy = rgbd:tcp -h localhost -p 0
 
 
 

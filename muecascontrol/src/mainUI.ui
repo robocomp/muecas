@@ -104,7 +104,7 @@
   <widget class="QWidget" name="formLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>210</x>
+     <x>290</x>
      <y>310</y>
      <width>162</width>
      <height>311</height>
@@ -114,6 +114,19 @@
     <property name="fieldGrowthPolicy">
      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
     </property>
+    <item row="1" column="1">
+     <widget class="QLabel" name="label_2">
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>EYES</string>
+      </property>
+     </widget>
+    </item>
     <item row="2" column="0">
      <widget class="QLabel" name="label_8">
       <property name="text">
@@ -163,6 +176,13 @@
       </property>
      </widget>
     </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="label_17">
+      <property name="text">
+       <string>Right Pan</string>
+      </property>
+     </widget>
+    </item>
     <item row="4" column="1">
      <widget class="QDoubleSpinBox" name="righteyepan">
       <property name="decimals">
@@ -179,10 +199,10 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="0">
-     <widget class="QLabel" name="label_17">
+    <item row="6" column="0">
+     <widget class="QLabel" name="label_5">
       <property name="text">
-       <string>Right Pan</string>
+       <string>Left Pitch</string>
       </property>
      </widget>
     </item>
@@ -202,10 +222,10 @@
       </property>
      </widget>
     </item>
-    <item row="6" column="0">
-     <widget class="QLabel" name="label_5">
+    <item row="7" column="0">
+     <widget class="QLabel" name="label_18">
       <property name="text">
-       <string>Left Pitch</string>
+       <string>Right Pitch</string>
       </property>
      </widget>
     </item>
@@ -222,10 +242,10 @@
       </property>
      </widget>
     </item>
-    <item row="7" column="0">
-     <widget class="QLabel" name="label_18">
+    <item row="8" column="0">
+     <widget class="QLabel" name="label_6">
       <property name="text">
-       <string>Right Pitch</string>
+       <string>Left Roll</string>
       </property>
      </widget>
     </item>
@@ -245,10 +265,10 @@
       </property>
      </widget>
     </item>
-    <item row="8" column="0">
-     <widget class="QLabel" name="label_6">
+    <item row="9" column="0">
+     <widget class="QLabel" name="label_19">
       <property name="text">
-       <string>Left Roll</string>
+       <string>Right Roll</string>
       </property>
      </widget>
     </item>
@@ -265,26 +285,6 @@
       </property>
      </widget>
     </item>
-    <item row="9" column="0">
-     <widget class="QLabel" name="label_19">
-      <property name="text">
-       <string>Right Roll</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QLabel" name="label_2">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>EYES</string>
-      </property>
-     </widget>
-    </item>
     <item row="5" column="1">
      <widget class="QLabel" name="label_3">
       <property name="text">
@@ -297,7 +297,7 @@
   <widget class="QWidget" name="formLayoutWidget_2">
    <property name="geometry">
     <rect>
-     <x>30</x>
+     <x>50</x>
      <y>310</y>
      <width>160</width>
      <height>211</height>
@@ -444,7 +444,7 @@
   <widget class="Line" name="line">
    <property name="geometry">
     <rect>
-     <x>380</x>
+     <x>490</x>
      <y>310</y>
      <width>21</width>
      <height>321</height>
@@ -484,201 +484,6 @@
      <height>78</height>
     </rect>
    </property>
-  </widget>
-  <widget class="QWidget" name="formLayoutWidget_3">
-   <property name="geometry">
-    <rect>
-     <x>410</x>
-     <y>310</y>
-     <width>161</width>
-     <height>321</height>
-    </rect>
-   </property>
-   <layout class="QFormLayout" name="formLayout_3">
-    <property name="fieldGrowthPolicy">
-     <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-    </property>
-    <item row="1" column="1">
-     <widget class="QLabel" name="label_23">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>IMU</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <widget class="QLabel" name="label_15">
-      <property name="text">
-       <string>AccX</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="0">
-     <widget class="QLabel" name="label_16">
-      <property name="text">
-       <string>AccY</string>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="0">
-     <widget class="QLabel" name="label_20">
-      <property name="text">
-       <string>AccZ</string>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="0">
-     <widget class="QLabel" name="label_22">
-      <property name="text">
-       <string>MagX</string>
-      </property>
-     </widget>
-    </item>
-    <item row="8" column="0">
-     <widget class="QLabel" name="label_24">
-      <property name="text">
-       <string>MagY</string>
-      </property>
-     </widget>
-    </item>
-    <item row="9" column="0">
-     <widget class="QLabel" name="label_25">
-      <property name="text">
-       <string>MagZ</string>
-      </property>
-     </widget>
-    </item>
-    <item row="10" column="0">
-     <widget class="QLabel" name="label_26">
-      <property name="text">
-       <string>GyrX</string>
-      </property>
-     </widget>
-    </item>
-    <item row="11" column="0">
-     <widget class="QLabel" name="label_27">
-      <property name="text">
-       <string>GyrY</string>
-      </property>
-     </widget>
-    </item>
-    <item row="12" column="0">
-     <widget class="QLabel" name="label_28">
-      <property name="text">
-       <string>GyrZ</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="1">
-     <widget class="QLCDNumber" name="lcdNumberAccY">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="1">
-     <widget class="QLCDNumber" name="lcdNumberAccZ">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="1">
-     <widget class="QLCDNumber" name="lcdNumberMagX">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-     </widget>
-    </item>
-    <item row="8" column="1">
-     <widget class="QLCDNumber" name="lcdNumberMagY">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-     </widget>
-    </item>
-    <item row="9" column="1">
-     <widget class="QLCDNumber" name="lcdNumberMagZ">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-     </widget>
-    </item>
-    <item row="10" column="1">
-     <widget class="QLCDNumber" name="lcdNumberGyrX">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="segmentStyle">
-       <enum>QLCDNumber::Outline</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="11" column="1">
-     <widget class="QLCDNumber" name="lcdNumberGyrY">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-     </widget>
-    </item>
-    <item row="12" column="1">
-     <widget class="QLCDNumber" name="lcdNumberGyrZ">
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="1">
-     <widget class="QLCDNumber" name="lcdNumberAccX">
-      <property name="font">
-       <font>
-        <pointsize>13</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-        <strikeout>true</strikeout>
-       </font>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Sunken</enum>
-      </property>
-      <property name="lineWidth">
-       <number>1</number>
-      </property>
-      <property name="segmentStyle">
-       <enum>QLCDNumber::Outline</enum>
-      </property>
-     </widget>
-    </item>
-   </layout>
   </widget>
  </widget>
  <resources/>

@@ -1,10 +1,9 @@
 import "JointMotor.idsl";
-import "Speech.idsl";
-import "IMU.idsl";
+import "RGBD.idsl";
 
 Component MuecasControlComp{
 	Communications{
-		requires JointMotor, JointMotor, Speech, IMU;
+		requires JointMotor, RGBD;
 	};
 	language Cpp;
 	gui Qt(QWidget);

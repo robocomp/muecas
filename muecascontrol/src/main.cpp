@@ -83,8 +83,9 @@
 
 
 #include <JointMotor.h>
-#include <Speech.h>
-#include <IMU.h>
+#include <RGBD.h>
+#include <JointMotor.h>
+#include <GenericBase.h>
 
 
 // User includes here
@@ -136,10 +137,8 @@ int ::MuecasControlComp::run(int argc, char* argv[])
 
 	int status=EXIT_SUCCESS;
 
-	JointMotorPrx jointmotor1_proxy;
-	JointMotorPrx jointmotor2_proxy;
-	SpeechPrx speech_proxy;
-	IMUPrx imu_proxy;
+	JointMotorPrx jointmotor_proxy;
+	RGBDPrx rgbd_proxy;
 
 	string proxy, tmp;
 	initialize();
@@ -147,70 +146,36 @@ int ::MuecasControlComp::run(int argc, char* argv[])
 
 	try
 	{
-		if (not GenericMonitor::configGetString(communicator(), prefix, "JointMotor1Proxy", proxy, ""))
+		if (not GenericMonitor::configGetString(communicator(), prefix, "JointMotorProxy", proxy, ""))
 		{
 			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy JointMotorProxy\n";
 		}
-		jointmotor1_proxy = JointMotorPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+		jointmotor_proxy = JointMotorPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 	}
 	catch(const Ice::Exception& ex)
 	{
 		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
 		return EXIT_FAILURE;
 	}
-	rInfo("JointMotorProxy1 initialized Ok!");
-	mprx["JointMotorProxy1"] = (::IceProxy::Ice::Object*)(&jointmotor1_proxy);//Remote server proxy creation example
+	rInfo("JointMotorProxy initialized Ok!");
+	mprx["JointMotorProxy"] = (::IceProxy::Ice::Object*)(&jointmotor_proxy);//Remote server proxy creation example
 
 
 	try
 	{
-		if (not GenericMonitor::configGetString(communicator(), prefix, "JointMotor2Proxy", proxy, ""))
+		if (not GenericMonitor::configGetString(communicator(), prefix, "RGBDProxy", proxy, ""))
 		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy JointMotorProxy\n";
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy RGBDProxy\n";
 		}
-		jointmotor2_proxy = JointMotorPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+		rgbd_proxy = RGBDPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 	}
 	catch(const Ice::Exception& ex)
 	{
 		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
 		return EXIT_FAILURE;
 	}
-	rInfo("JointMotorProxy2 initialized Ok!");
-	mprx["JointMotorProxy2"] = (::IceProxy::Ice::Object*)(&jointmotor2_proxy);//Remote server proxy creation example
-
-
-	try
-	{
-		if (not GenericMonitor::configGetString(communicator(), prefix, "SpeechProxy", proxy, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy SpeechProxy\n";
-		}
-		speech_proxy = SpeechPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
-	}
-	catch(const Ice::Exception& ex)
-	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
-		return EXIT_FAILURE;
-	}
-	rInfo("SpeechProxy initialized Ok!");
-	mprx["SpeechProxy"] = (::IceProxy::Ice::Object*)(&speech_proxy);//Remote server proxy creation example
-
-
-	try
-	{
-		if (not GenericMonitor::configGetString(communicator(), prefix, "IMUProxy", proxy, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy IMUProxy\n";
-		}
-		imu_proxy = IMUPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
-	}
-	catch(const Ice::Exception& ex)
-	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
-		return EXIT_FAILURE;
-	}
-	rInfo("IMUProxy initialized Ok!");
-	mprx["IMUProxy"] = (::IceProxy::Ice::Object*)(&imu_proxy);//Remote server proxy creation example
+	rInfo("RGBDProxy initialized Ok!");
+	mprx["RGBDProxy"] = (::IceProxy::Ice::Object*)(&rgbd_proxy);//Remote server proxy creation example
 
 
 

@@ -68,78 +68,35 @@ SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
 	qDebug() << __FUNCTION__ << "Read params from faulhaber and muecasJoint";
 	try
 	{
-		mplFaulhaber = jointmotor2_proxy->getAllMotorParams();
-		mplAll = mplFaulhaber;
-		foreach( RoboCompJointMotor::MotorParams param, mplFaulhaber)
+		mplAll = jointmotor_proxy->getAllMotorParams();
+		foreach( RoboCompJointMotor::MotorParams param, mplAll)
 		{
 			qDebug() << QString::fromStdString(param.name);
 		}
-		qDebug() << __FUNCTION__ << "Connection to Faulhaber OK";
+		qDebug() << __FUNCTION__ << "Connection to motors OK";
 	}
 	catch(Ice::Exception &e)
 	{	std::cout << e<<std::endl;	}
 	
-	try
-	{		
-		mplMuecas =jointmotor1_proxy->getAllMotorParams();
-		foreach (RoboCompJointMotor::MotorParams motor, mplMuecas)
-			mplAll.push_back(motor);
-		qDebug() << __FUNCTION__ << "Connection to SERVOS OK";
-	}
-	catch(Ice::Exception &e)
-	{	std::cout << e<<std::endl; }
-
-// 	//Now checking for motors in JointMotor that match localParams
-// 	int cont=0;
-// 	QVector<RoboCompJointMotor::MotorParams> qmp = QVector<RoboCompJointMotor::MotorParams>::fromStdVector( mplFaulhaber );
-// 	foreach( RoboCompJointMotor::MotorParams qmp, mplFaulhaber)
-// 	{
-// 		if (qmp.name == neckMotorName  or  qmp.name == tiltMotorName  or qmp.name == leftPanMotorName or  qmp.name == rightPanMotorName )
-// 		{
-// 			headParams.motorsParams[qmp.name] = qmp;
-// 			cont++;
-// 		}
-// 		else
-// 			qDebug() << "muecasHead::Monitor::Initialize() - No required motor found in running JointMotor: "<<qmp.name.c_str();
-// 	}
 	
-// 	if(cont != 4)
-// 	{
-// 		qDebug() << "muecasHead::Monitor::Initialize() - Required motors not found in running JointMotor";
-// 		qFatal("error initializing head motors");
-// 	}
-// 	headParams.model = "NT2P";
-
 	qDebug() << "muecasHead() - constructor Ok";
 	
-	////////////////////////////////////////////////////////////////////////////
-		
- 	qImageRGB = new QImage(640,480, QImage::Format_Indexed8);
-// 	Rgbcv = new RCDraw(paramsCamera.width,paramsCamera.height, qImageRGB, imgframe);
-// 	
-// 	qImageRGB2 = new QImage(paramsCamera.width,paramsCamera.height, QImage::Format_Indexed8);
-// 	Rgbcv2 = new RCDraw(paramsCamera.width,paramsCamera.height, qImageRGB2, imgframe2);
-// 	
-// 	cvImage = cvCreateImage(cvSize(320,240), 8, 1);
-// 	cvImage2 = cvCreateImage(cvSize(320,240), 8, 1);
-// 	cvrgb = cvCreateImage(cvSize(320,240), 8, 1);
-// 	cvrgb2 = cvCreateImage(cvSize(320,240), 8, 1);
 	
 	///////////////////////////////////////////////////////////////////////
 	 
-	connect(neckpitch, SIGNAL(valueChanged(double)),this, SLOT(moveNeck(double)));
-	connect(neckroll, SIGNAL(valueChanged(double)),this, SLOT(moveNeck(double)));
-	connect(neckyaw, SIGNAL(valueChanged(double)),this, SLOT(moveNeck(double)));
+// 	connect(neckpitch, SIGNAL(valueChanged(double)),this, SLOT(moveNeck(double)));
+// 	connect(neckroll, SIGNAL(valueChanged(double)),this, SLOT(moveNeck(double)));
+// 	connect(neckyaw, SIGNAL(valueChanged(double)),this, SLOT(moveNeck(double)));
 	connect(eyetilt, SIGNAL(valueChanged(double)),this, SLOT(moveNeck(double)));
 	connect(lefteyepan, SIGNAL(valueChanged(double)),this, SLOT(moveNeck(double)));
 	connect(righteyepan, SIGNAL(valueChanged(double)),this, SLOT(moveNeck(double)));
-	connect(lefteyebrowpitch, SIGNAL(valueChanged(double)),this, SLOT(moveFaceElems(double)));
-	connect(righteyebrowpitch, SIGNAL(valueChanged(double)),this, SLOT(moveFaceElems(double)));
-	connect(lefteyebrowroll, SIGNAL(valueChanged(double)),this, SLOT(moveFaceElems(double)));
-	connect(righteyebrowroll, SIGNAL(valueChanged(double)),this, SLOT(moveFaceElems(double)));
+// 	connect(lefteyebrowpitch, SIGNAL(valueChanged(double)),this, SLOT(moveFaceElems(double)));
+// 	connect(righteyebrowpitch, SIGNAL(valueChanged(double)),this, SLOT(moveFaceElems(double)));
+// 	connect(lefteyebrowroll, SIGNAL(valueChanged(double)),this, SLOT(moveFaceElems(double)));
+// 	connect(righteyebrowroll, SIGNAL(valueChanged(double)),this, SLOT(moveFaceElems(double)));
 	
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));	
-	connect(ButtonSpeech, SIGNAL(clicked()),this, SLOT(habla()));
+// 	connect(ButtonSpeech, SIGNAL(clicked()),this, SLOT(habla()));
 	
 	timer.start(100); //is in ms
 }
@@ -154,8 +111,9 @@ SpecificWorker::~SpecificWorker()
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
 {
 
+	innermodel = new InnerModel("/home/robocomp/robocomp/files/innermodel/muecas-robolab.xml");
 	timer.start(Period);
-
+	
 	return true;
 };
 
@@ -164,111 +122,35 @@ void SpecificWorker::compute( )
 ////////////////motores///////////////////////////////////////
 	try
 	{
-		//qDebug() << "Talking to head";
-		jointmotor2_proxy->getAllMotorState(stateFaulhaber);
+		jointmotor_proxy->getAllMotorState(stateAll);
 	}
-	catch(Ice::Exception &ex)
-	{	std::cout << ex<<std::endl; }
+	catch(Ice::Exception &ex){	std::cout << ex<<std::endl; }
 
-	try
-	{
-		jointmotor1_proxy->getAllMotorState(stateMuecas);
-	}
-	catch(Ice::Exception &ex)
-	{ std::cout << ex<<std::endl;	}
-	
-	
-	try
-	{
-		dataImu = imu_proxy->getDataImu();
-		lcdNumberAccX->display(dataImu.acc.XAcc);
-		lcdNumberAccY->display(dataImu.acc.YAcc);
-		lcdNumberAccZ->display(dataImu.acc.ZAcc);
-		lcdNumberMagX->display(dataImu.mag.XMag);
-		lcdNumberMagY->display(dataImu.mag.YMag);
-		lcdNumberMagZ->display(dataImu.mag.ZMag);
-		lcdNumberGyrX->display(dataImu.gyro.XGyr);
-		lcdNumberGyrY->display(dataImu.gyro.YGyr);
-		lcdNumberGyrZ->display(dataImu.gyro.ZGyr);
-	}
-	catch(Ice::Exception &ex)
-	{ std::cout << ex<<std::endl;	}
-	
-	mutex_memory->lock();
-		stateAll = stateFaulhaber;
-		std::pair<std::string,RoboCompJointMotor::MotorState> pair;
-		foreach (pair,stateMuecas)
-			stateAll[pair.first] = pair.second;
-	mutex_memory->unlock();
 	
 	///////////camara/////////////////////////////////////////////////
-// 	try{
-// 		
-// 			camera_proxy->getYImage(5, imgCam, hState, bState);
-//   			memcpy(cvImage->imageData, &imgCam[0], imgSize);	
-//  			memcpy(cvImage2->imageData, &imgCam[imgSize], imgSize);	
-//   	}
-//   	catch(const Ice::Exception& e)
-//   	{
-//   		qDebug()<<"Error reading camera images";
-//   	}
+ 	try
+ 	{
+		RoboCompRGBD::imgType rgb;
+		RoboCompRGBD::depthType depth;
+		RoboCompJointMotor::MotorStateMap hState;
+		RoboCompGenericBase::TBaseState bState;
+
+ 		rgbd1_proxy->getData(rgb, depth, hState, bState);
+		memcpy(cvLeftImage->imageData, &rgb_left[0], imgSize);	
+		rgbd2_proxy->getData(rgb, depth, hState, bState);
+		memcpy(cvRightImage->imageData, &rgb_right[0], imgSize);	
+		
+   	}
+   	catch(const Ice::Exception& e)
+   	{
+   		qDebug()<<"Error reading camera images";
+   	}
 // 
 //  	cvFlip(cvImage, cvImage, 0);
 //  	cvFlip(cvImage2, cvImage2, 0);
 //  	memcpy (  qImageRGB->bits(), cvImage->imageData, paramsCamera.width*paramsCamera.height );
 // 	memcpy (  qImageRGB2->bits(), cvImage2->imageData, paramsCamera.width*paramsCamera.height );
 
-	 //IMAGE
-// 		FlyCapture2::Error error;
-// 		FlyCapture2::Image rawImageL, rawImageR;	
-// 		 
-// 		error = ppCameras[0]->RetrieveBuffer( &rawImageL );
-// 		 qDebug() << "start cap";
-// 		if ( error != FlyCapture2::PGRERROR_OK )
-// 		{
-// 			std::cout << "capture error" << std::endl;
-// 		}
-//  		error = ppCameras[1]->RetrieveBuffer( &rawImageR );
-//  		if ( error != FlyCapture2::PGRERROR_OK )
-//  		{
-//  			std::cout << "capture error" << std::endl;
-//  		}
-// 		
-// 		// convert to rgb
-// 	  //FlyCapture2::Image rgbImage;
-//     //rawImageL.Convert( FlyCapture2::PIXEL_FORMAT_BGR, &rgbImage );
-// 		// convert to OpenCV Mat
-// 		unsigned int rowBytes = (double)rawImageL.GetReceivedDataSize()/(double)rawImageL.GetRows();       
-// 		cv::Mat imageL = cv::Mat(rawImageL.GetRows(), rawImageL.GetCols(), CV_8UC1, rawImageL.GetData(),rowBytes);
-// 		cv::flip(imageL, imageL, 0);
-// 		const QImage qimageL(imageL.data, imageL.cols, imageL.rows, imageL.step, QImage::Format_Indexed8);
-// 		labelLeft->setPixmap(QPixmap::fromImage(qimageL));
-// 		cv::Mat imageR = cv::Mat(rawImageR.GetRows(), rawImageR.GetCols(), CV_8UC1, rawImageR.GetData(),rowBytes);
-// 		cv::flip(imageR, imageR, 0);
-// 		const QImage qimageR(imageR.data, imageR.cols, imageR.rows, imageR.step, QImage::Format_Indexed8);
-// 		labelRight->setPixmap(QPixmap::fromImage(qimageR));
-// 		
-// 		cv::StereoBM sbm;
-// // 		sbm.state->SADWindowSize = 9;
-// // 		sbm.state->numberOfDisparities = 112;
-// // 		sbm.state->preFilterSize = 5;
-// // 		sbm.state->preFilterCap = 61;
-// // 		sbm.state->minDisparity = -39;
-// // 		sbm.state->textureThreshold = 507;
-// // 		sbm.state->uniquenessRatio = 0;
-// // 		sbm.state->speckleWindowSize = 0;
-// // 		sbm.state->speckleRange = 8;
-// // 		sbm.state->disp12MaxDiff = 1;
-// 		Mat disp, disp_norm, disp_norm_scaled;
-// 		sbm(imageR, imageL, disp);
-// 		cv::normalize( disp, disp_norm, 0, 255, NORM_MINMAX, CV_8U, Mat() );
-// 		//cv::convertScaleAbs( disp_norm, disp_norm_scaled );
-// 		cv::imshow("disp",disp_norm);
-// 		cv::waitKey(10);
-//     // resize the label to fit the image
-//     //labelRight->resize(label->pixmap()->size());
-// 		// 		cv::imshow("image", image);
-// 		// 		cv::waitKey(10); 
 }
 
 
